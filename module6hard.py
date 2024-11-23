@@ -1,39 +1,204 @@
+from math import prod
+
+
 class Figure:
     sides_count = 0
-    print(sides_count)
+
     def __init__(self, color, *sides):
         self.__color = color
-        self.__sides = sides
+        # НЕ НРАВИТСЯ ЭТО УСЛОВИЕ ИЗ-ЗА str().
+        # len(list(*sides)) > 1: не работает, если 1 элемент в *sides
+        if len(str(*sides)) > 1:
+            self.__sides = list(*sides)
+        else:
+            self.__sides = list(sides)
         self.filled = True
-        # print(self.__sides)
+        # print(self.__sides, type(self.__sides))
+        # print(sides, type(sides))
+        #
+        # print(*sides, type(*sides))
 
     def get_color(self):
         return self.__color
 
-    def  set_color(self, new_color):
-        self.__color = new_color
+    def __is_valid_color(self, new_color):
+        rgb = len(new_color)
+        if rgb != 3:
+            print(f"Вы указали цвет не в режиме RGB! Возможно указали в режиме CMYK")
+            print(f"Укажите цвет в виде трех чисел в диапазоне от 0 до 255")
+            print(f"Цвет остался прежний")
+            return False
+        else:
+            for i in range(rgb):
+                # all = 0
+                if 0 <= new_color[i] <= 255:
+                    continue
+                else:
+                    print(f"Вы указали цвет RGB вне диапазона 0-255")
+                    return False
+            print("Цвет изменен успешно!")
+            return True
 
-    def __is_valid_sides(self):
-        pass
+    def set_color(self, new_color):
+        if self.__is_valid_color(new_color):
+            self.__color = new_color
+
+    def __is_valid_sides(self, sides_count, *new_sides):
+        new_sides = list(new_sides)
+        len_param = len(new_sides)
+        for i in range(len_param):
+            if isinstance(new_sides[i], int) and new_sides[i] > 0:
+                continue
+            else:
+                print(f"Размер должен быть положительным десятичным числом!")
+                return False
+
+        if sides_count == len(list(new_sides)):
+            # print("Count of sides is True")
+            return True
+        else:
+            print(f"ЗАДАНО НЕПРАВИЛЬНОЕ КОЛ-ВО СТОРОН. Их должно быть: {sides_count}")
+            return False
 
     def get_sides(self):
         return self.__sides
 
     def __len__(self):
-        pass
+        # if len(self.__sides) == 1 or len(self.__sides) == 12:
+        return sum(self.__sides)
+
+    """Изменяем размеры сторон"""
 
     def set_sides(self, *new_sides):
-        pass
+        # если у объекта 12 сторон, а новая длина стороны задана одним параметром, значит имеем делок с кубом
+        if self.sides_count == 12 and len(new_sides) == 1:
+            new_sides *= 12
+        if self.sides_count == len(new_sides):
+            if self._Figure__is_valid_sides(self.sides_count, *new_sides):
+                if self.sides_count > 1:
+                    self.__sides.clear()
+                    self.__sides = list(new_sides)
+                else:
+                    self.__sides = list(new_sides)
+
+
+
+
 
 class Circle(Figure):
     sides_count = 1
-    print(sides_count)
 
-circle = Circle((200,200,200),2)
-print(isinstance(circle, Circle))
+    def __init__(self, color, *sides):
+        if not super()._Figure__is_valid_sides(self.sides_count, *sides):
+            sides = 1
+            print(f"Длина окружности задается по умолчанию {sides}")
 
-# print(figure._Figure__color)
-# figure.set_color((100,100,100))
-# print(dir(figure))
-# print(figure._Figure__color)
+        super().__init__(color, sides)
 
+    def get_square(self):
+        radius = self._Figure__sides[0] / (2 * 3.1415)
+        return 3.14 * radius ** 2
+
+
+class Cube(Figure):
+    sides_count = 12
+    args_count = 1
+
+    def __init__(self, color, *sides):
+        if not super()._Figure__is_valid_sides(self.args_count, *sides):
+            sides = []
+            for i in range(self.sides_count):
+                sides.append(1)
+            print(f"Размер всех ребер куба задан по умолчанию (1)")
+        else:
+            sides *= self.sides_count
+        super().__init__(color, sides)
+
+    def get_volume(self):
+        return self._Figure__sides[0]**3
+
+
+class Triangle(Figure):
+    sides_count = 3
+    args_count = 3
+
+    def __init__(self, color, *sides):
+        if not super()._Figure__is_valid_sides(self.args_count, *sides):
+            sides = []
+            for i in range(self.sides_count):
+                sides.append(1)
+            print(f"Размер всех сторон треугольника задан по умолчанию (1)")
+        super().__init__(color, sides)
+
+    """площадь треугольника"""
+    def get_square(self):
+        p = sum(self.get_sides()) / 2
+        diff_of_nums = []
+        for i in range(len(self.get_sides())):
+            diff_of_nums.append(p - self._Figure__sides[i])
+        if 0 in diff_of_nums:
+            print("По формуле Герна площадь треугольника с заданными сторонами не рассчитать!")
+            return 0
+        # print(p, diff_of_nums, prod(diff_of_nums))
+        s = (p * prod(diff_of_nums)) ** 0.5
+        print("Площадь треугольника по формуле Герона равна: ", s)
+
+
+print('КРУГ')
+circle = Circle((200, 200, 200), 5)
+print(f"Цвет круга: {circle.get_color()}\n")
+
+print(f"Зададим новый цвет: (10, 100, 117)")
+circle.set_color((10, 100, 117))
+print(f"Проверяем цвет: {circle.get_color()}\n")
+
+print(f"Зададим неправильный цвет: (-10, 100, 117)")
+circle.set_color((-10, 100, 117))
+print(f"Проверяем цвет: {circle.get_color()}\n")
+
+print("Длина окружности: ", len(circle))
+
+print(f"Зададим новую дину окружности: 10")
+circle.set_sides(10)
+print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
+
+print(f"Зададим новую дину окружности: '10'")
+circle.set_sides("10")
+print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
+
+print(f"Зададим новую дину окружности: -10")
+circle.set_sides(-10)
+print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
+
+print("Площадь круга:", circle.get_square())
+print("\n")
+
+print('КУБ')
+cube = Cube((200, 200, 200), 2)
+cube.set_color((10, 100, 117))
+print(f"Длина каждого ребра куба составляет: {set(cube._Figure__sides)}")
+print("Посмотрим на стороны куба:", cube.get_sides())
+print("Посмотрим на периметр куба:", len(cube))
+print("Посмотрим на площадь куба:", len(cube))
+print("Посмотрим на объем куба:", cube.get_volume())
+print("Зададим новую сторону кубу: 5")
+cube.set_sides(5)
+print("Посмотрим на сторону куба", cube.get_sides())
+
+print("\n")
+
+print("Треугольник")
+triangle = Triangle((200, 200, 200), 4, 2, 3)
+triangle.set_color((10, 100, 117))
+print("Посмотрим на стороны треугольника:", triangle.get_sides())
+
+print("Зададим новые стороны треугольнику: 2, 3, 4")
+triangle.set_sides(2, 3, 4)
+print("Посмотрим на стороны треугольника:", triangle.get_sides())
+
+print("\nЗададим неправильные стороны треугольнику: 2, 3")
+triangle.set_sides(2, 3)
+print("Посмотрим на стороны треугольника:", triangle.get_sides())
+
+print("Периметр треугольника:", len(triangle))
+triangle.get_square()

@@ -1,6 +1,5 @@
 from math import prod
 
-
 class Figure:
     sides_count = 0
 
@@ -13,10 +12,6 @@ class Figure:
         else:
             self.__sides = list(sides)
         self.filled = True
-        # print(self.__sides, type(self.__sides))
-        # print(sides, type(sides))
-        #
-        # print(*sides, type(*sides))
 
     def get_color(self):
         return self.__color
@@ -39,7 +34,7 @@ class Figure:
             print("Цвет изменен успешно!")
             return True
 
-    def set_color(self, new_color):
+    def set_color(self, *new_color):
         if self.__is_valid_color(new_color):
             self.__color = new_color
 
@@ -68,7 +63,6 @@ class Figure:
         return sum(self.__sides)
 
     """Изменяем размеры сторон"""
-
     def set_sides(self, *new_sides):
         # если у объекта 12 сторон, а новая длина стороны задана одним параметром, значит имеем делок с кубом
         if self.sides_count == 12 and len(new_sides) == 1:
@@ -80,9 +74,6 @@ class Figure:
                     self.__sides = list(new_sides)
                 else:
                     self.__sides = list(new_sides)
-
-
-
 
 
 class Circle(Figure):
@@ -143,17 +134,44 @@ class Triangle(Figure):
         s = (p * prod(diff_of_nums)) ** 0.5
         print("Площадь треугольника по формуле Герона равна: ", s)
 
+###Код для проверки:
+circle1 = Circle((200, 200, 100), 10) # (Цвет, стороны)
+cube1 = Cube((222, 35, 130), 6)
 
-print('КРУГ')
+# Проверка на изменение цветов:
+circle1.set_color(55, 66, 77) # Изменится
+print(circle1.get_color())
+cube1.set_color(300, 70, 15) # Не изменится
+print(cube1.get_color())
+
+# Проверка на изменение сторон:
+cube1.set_sides(5, 3, 12, 4, 5) # Не изменится
+print(cube1.get_sides())
+circle1.set_sides(15) # Изменится
+print(circle1.get_sides())
+
+# Проверка периметра (круга), это и есть длина:
+print(len(circle1))
+
+# Проверка объёма (куба):
+print(cube1.get_volume())
+
+
+### Мои проверки
+print('\n\nКРУГ')
 circle = Circle((200, 200, 200), 5)
 print(f"Цвет круга: {circle.get_color()}\n")
 
 print(f"Зададим новый цвет: (10, 100, 117)")
-circle.set_color((10, 100, 117))
+circle.set_color(10, 100, 117)
 print(f"Проверяем цвет: {circle.get_color()}\n")
 
 print(f"Зададим неправильный цвет: (-10, 100, 117)")
-circle.set_color((-10, 100, 117))
+circle.set_color(-10, 100, 117)
+print(f"Проверяем цвет: {circle.get_color()}\n")
+
+print(f"Зададим неправильный цвет: (-10, 100, 117, 255)")
+circle.set_color(-10, 100, 117, 255)
 print(f"Проверяем цвет: {circle.get_color()}\n")
 
 print("Длина окружности: ", len(circle))
@@ -162,32 +180,36 @@ print(f"Зададим новую дину окружности: 10")
 circle.set_sides(10)
 print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
 
-print(f"Зададим новую дину окружности: '10'")
-circle.set_sides("10")
+print(f"Зададим новую дину окружности: '15'")
+circle.set_sides("15")
 print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
 
-print(f"Зададим новую дину окружности: -10")
-circle.set_sides(-10)
+print(f"Зададим новую дину окружности: -15")
+circle.set_sides(-15)
 print(f"Проверяем новыую длину круга: {circle.get_sides()}, {len(circle)}\n")
 
 print("Площадь круга:", circle.get_square())
+print(f"периметр круга равен длине окружности {len(circle)}")
 print("\n")
 
 print('КУБ')
 cube = Cube((200, 200, 200), 2)
-cube.set_color((10, 100, 117))
+print(f"Цвет куба {cube.get_color()}")
+print("Изменим цвет куба на (10, 100, 117)")
+cube.set_color(10, 100, 117)
+print(f"Цвет куба {cube.get_color()}")
 print(f"Длина каждого ребра куба составляет: {set(cube._Figure__sides)}")
 print("Посмотрим на стороны куба:", cube.get_sides())
-print("Посмотрим на периметр куба:", len(cube))
-print("Посмотрим на площадь куба:", len(cube))
-print("Посмотрим на объем куба:", cube.get_volume())
+print("Периметр куба:", len(cube))
+print("Площадь куба:", len(cube))
+print("Объем куба:", cube.get_volume())
 print("Зададим новую сторону кубу: 5")
 cube.set_sides(5)
 print("Посмотрим на сторону куба", cube.get_sides())
 
 print("\n")
 
-print("Треугольник")
+print(f"{"Треугольник".upper()}")
 triangle = Triangle((200, 200, 200), 4, 2, 3)
 triangle.set_color((10, 100, 117))
 print("Посмотрим на стороны треугольника:", triangle.get_sides())
